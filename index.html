@@ -184,6 +184,24 @@
         </div>
     </div>
 
+    <!-- UPI QR Modal -->
+    <div id="upiModal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center animate-slide-up relative">
+            <h2 class="text-xl font-bold mb-4">Scan & Pay via UPI</h2>
+            
+            <img id="upiQrImage" src="" class="w-48 h-48 mx-auto mb-4 border rounded-xl">
+
+            <p class="text-sm text-gray-600 mb-1">UPI ID</p>
+            <p id="upiIdText" class="font-bold text-brand mb-4"></p>
+
+            <p class="text-xs text-gray-400 mb-4">Scan the QR using any UPI app</p>
+
+            <button onclick="completePayment()" class="bg-brand text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-indigo-800 transition">
+                I've Paid
+            </button>
+        </div>
+    </div>
+
     <div id="successOverlay" class="fixed inset-0 bg-brand z-[60] hidden flex flex-col items-center justify-center text-white p-6">
         <div class="absolute inset-0 overflow-hidden" id="confettiContainer"></div>
         
@@ -355,6 +373,42 @@
         }
 
         // ============================================
+        // UPI QR PAYMENT SYSTEM
+        // ============================================
+
+        const upiIds = [
+            "flashstore@okaxis",
+            "flashmart@oksbi",
+            "flashpay@upi",
+            "quickflash@okicici",
+            "flashdelivery@ybl"
+        ];
+
+        function showUpiQR() {
+            const total = Object.values(cart).reduce((a, b) => a + b, 0);
+            const amount = Object.keys(cart).reduce((sum, id) => {
+                const product = products.find(p => p.id == id);
+                return sum + (product.price * cart[id]);
+            }, 0);
+
+            const randomIndex = Math.floor(Math.random() * upiIds.length);
+            const selectedUpi = upiIds[randomIndex];
+
+            const upiLink = `upi://pay?pa=${selectedUpi}&pn=Flash&am=${amount}&cu=INR`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
+
+            document.getElementById("upiQrImage").src = qrUrl;
+            document.getElementById("upiIdText").innerText = selectedUpi;
+
+            document.getElementById("upiModal").classList.remove("hidden");
+        }
+
+        function completePayment() {
+            document.getElementById("upiModal").classList.add("hidden");
+            showSuccessScreen();
+        }
+
+        // ============================================
         // INIT
         // ============================================
         function init() {
@@ -519,8 +573,8 @@
             lucide.createIcons();
 
             setTimeout(() => {
-                showSuccessScreen();
-            }, 2000);
+                showUpiQR();
+            }, 1000);
         }
 
         function showSuccessScreen() {
