@@ -414,6 +414,18 @@
         // INIT
         // ============================================
         function init() {
+                // ✅ Restore login after refresh
+    const savedToken = localStorage.getItem('google_token');
+    if (savedToken) {
+        const userObject = parseJwt(savedToken);
+        isLoggedIn = true;
+        user = {
+            name: userObject.given_name || userObject.name,
+            email: userObject.email,
+            img: userObject.picture
+        };
+        updateAuthUI();
+    }
             renderSidebar();
             renderProducts(products);
             lucide.createIcons();
@@ -649,6 +661,7 @@
     </script>
 </body>
 </html>
+
 
 
 
