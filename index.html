@@ -8,22 +8,91 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google OAuth Script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-        
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; transition: background 0.3s, color 0.3s; }
+
+        /* ===== LIGHT MODE (default) ===== */
         :root {
-            --brand-primary: #4338ca;
-            --brand-light: #e0e7ff;
-            --brand-accent: #db2777;
+            --bg-base: #f9fafb;
+            --bg-surface: #ffffff;
+            --bg-elevated: #f3f4f6;
+            --bg-card: #ffffff;
+            --border: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --brand: #4338ca;
+            --brand-soft: #e0e7ff;
+            --accent: #db2777;
+            --accent-soft: #fce7f3;
+            --shadow: rgba(0,0,0,0.08);
+        }
+
+        /* ===== DARK MODE ===== */
+        body.dark {
+            --bg-base: #0d0d12;
+            --bg-surface: #13131a;
+            --bg-elevated: #1a1a24;
+            --bg-card: #1e1e2c;
+            --border: #2a2a3d;
+            --text-primary: #f1f1f5;
+            --text-secondary: #8888a8;
+            --text-muted: #55556a;
+            --brand: #818cf8;
+            --brand-soft: #1e1b4b;
+            --accent: #ec4899;
+            --accent-soft: #2a1020;
+            --shadow: rgba(0,0,0,0.4);
+        }
+
+        body { background: var(--bg-base); color: var(--text-primary); }
+
+        /* ===== THEME TOGGLE SWITCH ===== */
+        .theme-toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            cursor: pointer;
+        }
+        .theme-toggle input { display: none; }
+        .toggle-track {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+            transition: background 0.4s;
+            display: flex;
+            align-items: center;
+            padding: 3px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+        }
+        body.dark .toggle-track {
+            background: linear-gradient(135deg, #312e81, #4338ca);
+        }
+        .toggle-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        body.dark .toggle-thumb { transform: translateX(24px); }
+
+        /* ===== GLOBAL TRANSITIONS ===== */
+        header, aside, main, .card, input, button, .modal-panel, #cartDrawer {
+            transition: background 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Animations */
         @keyframes slideUp {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -36,200 +105,228 @@
         }
         .pulse-ring::before {
             content: '';
-            position: absolute;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: var(--brand-primary);
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: #6366f1;
             border-radius: 50%;
             z-index: -1;
             animation: pulse-ring 2s infinite;
         }
 
-        /* Confetti */
-        .confetti {
-            position: absolute;
-            width: 10px; height: 10px;
-            background-color: #f00;
-            animation: fall linear forwards;
+        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+        /* Themed utility classes */
+        .t-surface { background: var(--bg-surface); }
+        .t-card { background: var(--bg-card); }
+        .t-elevated { background: var(--bg-elevated); }
+        .t-border { border-color: var(--border); }
+        .t-text { color: var(--text-primary); }
+        .t-muted { color: var(--text-secondary); }
+        .t-faint { color: var(--text-muted); }
+        .t-brand { color: var(--brand); }
+        .t-accent { color: var(--accent); }
+
+        .card-hover:hover {
+            box-shadow: 0 8px 32px var(--shadow), 0 0 0 1px var(--brand)22;
         }
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(720deg); }
-        }
+
+        /* Product image blending */
+        body:not(.dark) .product-img { mix-blend-mode: multiply; }
+        body.dark .product-img { mix-blend-mode: normal; filter: none; }
+
+        /* Scrollbar */
+        body.dark * { scrollbar-color: #2a2a3d #13131a; }
+        body:not(.dark) * { scrollbar-color: #e5e7eb #f9fafb; }
     </style>
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: '#4338ca', accent: '#db2777' }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: {} } }
     </script>
 </head>
-<body class="bg-gray-50 h-screen overflow-hidden flex flex-col">
+<body class="h-screen overflow-hidden flex flex-col">
 
-    <header class="bg-white border-b border-gray-200 h-16 flex-none z-40 relative">
+    <header class="t-surface border-b t-border h-16 flex-none z-40 relative">
         <div class="flex items-center justify-between px-4 md:px-6 h-full max-w-7xl mx-auto w-full">
             
             <div class="flex items-center gap-4 w-1/4">
-                <div class="text-2xl md:text-3xl font-black text-brand tracking-tighter flex items-center cursor-pointer" onclick="window.location.reload()">
-                    FLASH<span class="text-accent text-4xl leading-none">.</span>
+                <div class="text-2xl md:text-3xl font-black tracking-tighter flex items-center cursor-pointer t-brand" onclick="window.location.reload()">
+                    FLASH<span class="t-accent" style="font-size:2.2rem; line-height:1;">.</span>
                 </div>
             </div>
 
             <div class="flex-1 max-w-xl px-2 md:px-4 hidden md:block">
-                <div class="relative group">
+                <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+                        <i data-lucide="search" class="w-4 h-4 t-faint"></i>
                     </div>
-                    <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl bg-gray-100 focus:bg-white focus:ring-2 focus:ring-brand transition text-sm" placeholder="Search for 'milk', 'chips'...">
+                    <input type="text" id="searchInput" 
+                        class="block w-full pl-10 pr-3 py-2.5 rounded-xl text-sm transition outline-none"
+                        style="background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-primary);"
+                        placeholder="Search for 'milk', 'chips'...">
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-3 w-1/4">
+                <!-- Dark/Light Toggle -->
+                <label class="theme-toggle" title="Toggle dark/light mode">
+                    <input type="checkbox" id="themeToggle" onchange="toggleTheme(this)">
+                    <div class="toggle-track">
+                        <div class="toggle-thumb" id="toggleThumb">☀️</div>
+                    </div>
+                </label>
+
                 <div id="authContainer">
-                    <button onclick="toggleLoginModal()" class="text-gray-600 font-bold text-xs hover:text-brand px-3 py-2">Login</button>
+                    <button onclick="toggleLoginModal()" class="font-bold text-xs px-3 py-2 t-muted hover:t-brand transition">Login</button>
                 </div>
 
-                <button onclick="toggleCart()" class="bg-brand hover:bg-indigo-800 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition transform active:scale-95 shadow-lg shadow-indigo-100 relative">
+                <button onclick="toggleCart()" class="text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition transform active:scale-95 relative" style="background:linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow:0 4px 15px #6366f130;">
                     <i data-lucide="shopping-cart" class="w-4 h-4"></i>
                     <span class="hidden md:inline">Cart</span>
-                    <span id="headerCartCount" class="absolute -top-1 -right-1 bg-accent text-[10px] w-4 h-4 flex items-center justify-center rounded-full hidden border-2 border-white">0</span>
+                    <span id="headerCartCount" class="absolute -top-1 -right-1 text-[10px] w-4 h-4 flex items-center justify-center rounded-full hidden border-2 text-white" style="background:var(--accent); border-color:var(--bg-surface);">0</span>
                 </button>
             </div>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
-        <aside class="w-20 lg:w-64 bg-white border-r border-gray-200 overflow-y-auto no-scrollbar hidden md:block pb-20">
+        <aside class="w-20 lg:w-64 border-r t-border t-surface overflow-y-auto no-scrollbar hidden md:block pb-20">
             <div class="p-4" id="categoryList"></div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6 pb-24" id="mainScroll">
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24" id="mainScroll" style="background:var(--bg-base);">
             
             <div class="md:hidden mb-4">
-                <input type="text" class="w-full p-3 border border-gray-200 rounded-xl bg-white shadow-sm text-sm" placeholder="Search products...">
+                <input type="text" class="w-full p-3 rounded-xl text-sm outline-none" style="background:var(--bg-card); border:1px solid var(--border); color:var(--text-primary);" placeholder="Search products...">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div class="rounded-3xl bg-gradient-to-r from-violet-600 to-indigo-600 h-40 md:h-48 relative overflow-hidden p-6 text-white shadow-lg flex flex-col justify-center">
-                    <span class="bg-yellow-400 text-indigo-900 text-[10px] font-black px-2 py-1 rounded w-max mb-2">FREE DELIVERY</span>
+                <div class="rounded-3xl h-40 md:h-48 relative overflow-hidden p-6 text-white flex flex-col justify-center" style="background:linear-gradient(135deg, #312e81, #6366f1);">
+                    <div class="absolute inset-0" style="background:radial-gradient(circle at 80% 50%, #ffffff15 0%, transparent 70%);"></div>
+                    <span class="text-[10px] font-black px-2 py-1 rounded w-max mb-2 z-10" style="background:#fbbf24; color:#1e1b4b;">FREE DELIVERY</span>
                     <h2 class="text-2xl font-bold leading-tight z-10">Midnight <br>Cravings?</h2>
-                    <p class="text-indigo-200 text-xs mt-1 z-10">Open till 3 AM</p>
-                    <img src="https://cdn-icons-png.flaticon.com/512/3081/3081840.png" class="absolute right-0 bottom-0 w-32 h-32 opacity-20 rotate-12 translate-x-4 translate-y-4">
+                    <p class="text-indigo-300 text-xs mt-1 z-10">Open till 3 AM</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/3081/3081840.png" class="absolute right-0 bottom-0 w-32 h-32 opacity-10 rotate-12 translate-x-4 translate-y-4">
                 </div>
-                <div class="hidden md:flex rounded-3xl bg-pink-100 h-48 relative overflow-hidden p-6 flex-col justify-center border border-pink-200">
-                    <h2 class="text-2xl font-bold text-pink-900 leading-tight">Fresh Veggies <br>Flat 20% Off</h2>
-                    <button class="bg-pink-600 text-white text-xs font-bold px-4 py-2 rounded-full w-max mt-3 hover:bg-pink-700 shadow-md">Shop Now</button>
-                    <img src="https://cdn-icons-png.flaticon.com/512/2329/2329865.png" class="absolute right-4 bottom-4 w-24 h-24 drop-shadow-xl">
+                <div class="hidden md:flex rounded-3xl h-48 relative overflow-hidden p-6 flex-col justify-center t-card border t-border">
+                    <div class="absolute inset-0" style="background:radial-gradient(circle at 80% 50%, var(--accent)10 0%, transparent 70%);"></div>
+                    <h2 class="text-2xl font-bold leading-tight z-10 t-text">Fresh Veggies <br><span style="color:var(--accent);">Flat 20% Off</span></h2>
+                    <button class="text-white text-xs font-bold px-4 py-2 rounded-full w-max mt-3 z-10 transition" style="background:var(--accent);">Shop Now</button>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2329/2329865.png" class="absolute right-4 bottom-4 w-24 h-24 drop-shadow-xl opacity-70">
                 </div>
             </div>
 
-            <h2 id="sectionTitle" class="text-xl font-bold text-gray-800 mb-4">Trending Near You</h2>
+            <h2 id="sectionTitle" class="text-xl font-bold t-text mb-4">Trending Near You</h2>
             <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4"></div>
         </main>
     </div>
 
-    <div id="loginModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up relative overflow-hidden">
-            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="modal-panel t-surface rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up relative overflow-hidden border t-border">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 t-faint hover:t-text transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 text-brand">
-                    <i data-lucide="zap" class="w-6 h-6 fill-current"></i>
+                <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style="background:linear-gradient(135deg, #6366f1, #8b5cf6);">
+                    <i data-lucide="zap" class="w-6 h-6 fill-current text-white"></i>
                 </div>
-                <h2 class="text-2xl font-black text-gray-900">Get Started</h2>
-                <p class="text-sm text-gray-500 mt-1">Log in to track orders & save addresses</p>
+                <h2 class="text-2xl font-black t-text">Get Started</h2>
+                <p class="text-sm mt-1 t-muted">Log in to track orders & save addresses</p>
             </div>
-
-            <!-- Google Sign-In Button Container -->
             <div id="googleButtonContainer" class="flex justify-center mb-4"></div>
-
-            <!-- Fallback/Demo Button (shown if OAuth not configured) -->
-            <button id="demoLoginBtn" onclick="handleDemoLogin()" class="w-full border border-gray-300 rounded-xl py-3 px-4 flex items-center justify-center gap-3 hover:bg-gray-50 transition group">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 group-hover:scale-110 transition">
-                <span class="font-bold text-gray-700 text-sm">Sign in with Google</span>
+            <button id="demoLoginBtn" onclick="handleDemoLogin()" class="w-full rounded-xl py-3 px-4 flex items-center justify-center gap-3 transition t-elevated border t-border">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                <span class="font-bold text-sm t-text">Sign in with Google</span>
             </button>
-
             <div class="mt-6 text-center">
-                <p class="text-[10px] text-gray-400">By continuing, you agree to our Terms of Service & Privacy Policy.</p>
+                <p class="text-[10px] t-faint">By continuing, you agree to our Terms of Service & Privacy Policy.</p>
             </div>
-            
-            <div id="loginLoader" class="absolute inset-0 bg-white/90 hidden flex-col items-center justify-center z-10">
-                <div class="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin mb-2"></div>
-                <p class="text-xs font-bold text-brand">Authenticating...</p>
+            <div id="loginLoader" class="absolute inset-0 hidden flex-col items-center justify-center z-10 t-surface" style="opacity:0.95;">
+                <div class="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin mb-2" style="border-color:#6366f1; border-top-color:transparent;"></div>
+                <p class="text-xs font-bold t-brand">Authenticating...</p>
             </div>
         </div>
     </div>
 
-    <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-50 hidden transition-opacity" onclick="toggleCart()"></div>
-    <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
-        <div class="p-4 border-b flex items-center justify-between bg-white">
-            <h2 class="font-bold text-lg">My Cart</h2>
-            <button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <!-- Cart -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/60 z-50 hidden transition-opacity" onclick="toggleCart()"></div>
+    <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full md:w-[400px] z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col t-surface">
+        <div class="p-4 border-b t-border flex items-center justify-between t-surface">
+            <h2 class="font-bold text-lg t-text">My Cart</h2>
+            <button onclick="toggleCart()" class="p-2 hover:t-elevated rounded-full t-muted"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
-
-        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"></div>
-
-        <div id="cartFooter" class="p-4 bg-white border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] hidden">
+        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4" style="background:var(--bg-base);"></div>
+        <div id="cartFooter" class="p-4 border-t t-border hidden t-surface" style="box-shadow:0 -4px 20px var(--shadow);">
             <div class="space-y-2 mb-4 text-sm">
-                <div class="flex justify-between text-gray-500"><span>Item Total</span><span id="billItemTotal">₹0</span></div>
-                <div class="flex justify-between text-gray-500"><span>Delivery Fee</span><span class="text-green-600 font-bold">FREE</span></div>
-                <div class="flex justify-between font-bold text-lg text-gray-800 pt-2 border-t border-dashed"><span>To Pay</span><span id="billGrandTotal">₹0</span></div>
+                <div class="flex justify-between t-muted"><span>Item Total</span><span id="billItemTotal">₹0</span></div>
+                <div class="flex justify-between t-muted"><span>Delivery Fee</span><span class="font-bold" style="color:#22c55e;">FREE</span></div>
+                <div class="flex justify-between font-bold text-lg pt-2 border-t border-dashed t-border t-text"><span>To Pay</span><span id="billGrandTotal">₹0</span></div>
             </div>
-            <button onclick="initiateCheckout()" class="w-full bg-brand text-white font-bold py-3.5 rounded-xl hover:bg-indigo-800 transition flex justify-between px-4 items-center shadow-lg active:scale-[0.98]">
+            <button onclick="initiateCheckout()" class="w-full text-white font-bold py-3.5 rounded-xl transition flex justify-between px-4 items-center active:scale-[0.98]" style="background:linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow:0 4px 20px #6366f130;">
                 <span>Proceed to Pay</span>
-                <span id="payButtonTotal" class="bg-indigo-900/30 px-2 py-1 rounded text-xs">₹0</span>
+                <span id="payButtonTotal" class="px-2 py-1 rounded text-xs" style="background:rgba(0,0,0,0.2);">₹0</span>
             </button>
         </div>
     </div>
 
-    <!-- UPI QR Modal -->
-    <div id="upiModal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center animate-slide-up relative">
-            <h2 class="text-xl font-bold mb-4">Scan & Pay via UPI</h2>
-            
-            <img id="upiQrImage" src="" class="w-48 h-48 mx-auto mb-4 border rounded-xl">
-
-            <p class="text-sm text-gray-600 mb-1">UPI ID</p>
-            <p id="upiIdText" class="font-bold text-brand mb-4"></p>
-
-            <p class="text-xs text-gray-400 mb-4">Scan the QR using any UPI app</p>
-
-            <button onclick="completePayment()" class="bg-brand text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-indigo-800 transition">
-                I've Paid
-            </button>
+    <!-- UPI Modal -->
+    <div id="upiModal" class="fixed inset-0 bg-black/70 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="modal-panel t-surface rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center animate-slide-up border t-border">
+            <h2 class="text-xl font-bold mb-4 t-text">Scan & Pay via UPI</h2>
+            <img id="upiQrImage" src="" class="w-48 h-48 mx-auto mb-4 rounded-xl p-2" style="background:#fff;">
+            <p class="text-sm t-muted mb-1">UPI ID</p>
+            <p id="upiIdText" class="font-bold t-brand mb-4"></p>
+            <p class="text-xs t-faint mb-4">Scan the QR using any UPI app</p>
+            <button onclick="completePayment()" class="text-white px-6 py-2 rounded-xl text-sm font-bold transition" style="background:linear-gradient(135deg, #6366f1, #8b5cf6);">I've Paid</button>
         </div>
     </div>
 
-    <div id="successOverlay" class="fixed inset-0 bg-brand z-[60] hidden flex flex-col items-center justify-center text-white p-6">
+    <!-- Success Screen -->
+    <div id="successOverlay" class="fixed inset-0 z-[60] hidden flex flex-col items-center justify-center text-white p-6" style="background:linear-gradient(135deg, #1e1b4b, #4338ca);">
         <div class="absolute inset-0 overflow-hidden" id="confettiContainer"></div>
-        
         <div class="z-10 text-center animate-slide-up">
-            <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 pulse-ring relative">
+            <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 pulse-ring relative" style="background:rgba(255,255,255,0.15);">
                 <i data-lucide="check" class="w-10 h-10 text-white"></i>
             </div>
             <h1 class="text-3xl font-black mb-2">Order Placed!</h1>
-            <p class="text-indigo-200 mb-8">Your delivery partner is on the way.</p>
-
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 max-w-xs mx-auto">
-                <p class="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">Arriving In</p>
+            <p class="mb-8" style="color:#a5b4fc;">Your delivery partner is on the way.</p>
+            <div class="rounded-2xl p-6 max-w-xs mx-auto" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);">
+                <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#a5b4fc;">Arriving In</p>
                 <div class="text-5xl font-black tabular-nums tracking-tighter" id="countdownTimer">08:00</div>
             </div>
-
-            <button onclick="resetApp()" class="mt-8 bg-white text-brand font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition shadow-xl">
-                Continue Shopping
-            </button>
+            <button onclick="resetApp()" class="mt-8 font-bold py-3 px-8 rounded-full transition shadow-xl" style="background:#f1f1f5; color:#4338ca;">Continue Shopping</button>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // CONFIGURATION - PASTE YOUR CLIENT ID HERE
-        // ============================================
         const GOOGLE_CLIENT_ID = "976848195359-cr75430rapa4kd4lidljhvo1tq5mqboq.apps.googleusercontent.com";
-        // ============================================
 
+        // ===== THEME TOGGLE =====
+        function toggleTheme(checkbox) {
+            const thumb = document.getElementById('toggleThumb');
+            if (checkbox.checked) {
+                document.body.classList.add('dark');
+                thumb.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark');
+                thumb.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function applyStoredTheme() {
+            const stored = localStorage.getItem('theme');
+            const toggle = document.getElementById('themeToggle');
+            const thumb = document.getElementById('toggleThumb');
+            if (stored === 'dark') {
+                document.body.classList.add('dark');
+                toggle.checked = true;
+                thumb.textContent = '🌙';
+            } else {
+                thumb.textContent = '☀️';
+            }
+        }
+
+        // ===== DATA =====
         const products = [
             { id: 1, name: "Heritage Milk", price: 33, originalPrice: 35, weight: "500 ml", category: "Dairy", img: "https://m.media-amazon.com/images/I/815V9EawbJL._AC_UF894,1000_QL80_.jpg" },
             { id: 2, name: "Eggoz Brown Eggs", price: 85, originalPrice: 99, weight: "6 pcs", category: "Dairy", img: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=300&q=80" },
@@ -248,13 +345,6 @@
             { id: 15, name: "iPhone 15", price: 50000, originalPrice: 80000, weight: "171g", category: "Electronics", img: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRLe_hSKnPLx_HZ_sDemoAlp5TUoloz6uUN3vsLBpTct8aUhD4AEyf0FOUUh0y9XZGPTFAbr-HydqkVuhUmsjZ94iu7D2Na" },
             { id: 16, name: "Sony WH-1000XM6", price: 35000, originalPrice: 50000, weight: "252.6g", category: "Electronics", img: "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Primary_image_Black?$S7Product$&fmt=png-alpha" },
             { id: 17, name: "iPad Pro M5", price: 110000, originalPrice: 130000, weight: "579g", category: "Electronics", img: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTgInFzSDYuMSraHM9N-QCxqdlFDfPEPKFv5eZTuTl3-qKk6Q6SKLwKFmNGx-I-EozpPCibfGQbXADS31pjjDUqGPV0km3xhpoMBTfW0ch-pl7YvUU4T25zvWg" }
-
-
-
-            
-
-
-
         ];
 
         const categories = [
@@ -267,154 +357,87 @@
             { name: "People", icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" }
         ];
 
-        let cart = {}; 
+        let cart = {};
         let currentCategory = 'All';
         let isLoggedIn = false;
         let user = { name: "Guest", img: "" };
 
-        // ============================================
-        // GOOGLE OAUTH INTEGRATION
-        // ============================================
-        
+        // ===== GOOGLE AUTH =====
         function initializeGoogleSignIn() {
             if (GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID_HERE") {
-                console.log("⚠️ Google OAuth not configured. Using demo mode.");
                 document.getElementById('demoLoginBtn').style.display = 'flex';
                 return;
             }
-
-            // Hide demo button if OAuth is configured
             document.getElementById('demoLoginBtn').style.display = 'none';
-
-            // Initialize Google Sign-In
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: handleGoogleCallback,
-                auto_select: false,
-                cancel_on_tap_outside: true
-            });
-
-            // Render the Google Sign-In button
-            google.accounts.id.renderButton(
-                document.getElementById("googleButtonContainer"),
-                {
-                    theme: "outline",
-                    size: "large",
-                    width: 320,
-                    text: "signin_with",
-                    shape: "rectangular",
-                    logo_alignment: "left"
-                }
-            );
+            google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCallback });
+            google.accounts.id.renderButton(document.getElementById("googleButtonContainer"), { theme: document.body.classList.contains('dark') ? "filled_black" : "outline", size: "large", width: 320 });
         }
 
         function handleGoogleCallback(response) {
-            // Show loader
             document.getElementById('loginLoader').classList.remove('hidden');
             document.getElementById('loginLoader').style.display = 'flex';
-
-            // Decode JWT token to get user info
             const userObject = parseJwt(response.credential);
-            
             setTimeout(() => {
                 isLoggedIn = true;
-                user = {
-                    name: userObject.given_name || userObject.name,
-                    email: userObject.email,
-                    img: userObject.picture
-                };
-                
-                updateAuthUI();
-                toggleLoginModal();
-                
-                // Optional: Store token for backend authentication
+                user = { name: userObject.given_name || userObject.name, email: userObject.email, img: userObject.picture };
+                updateAuthUI(); toggleLoginModal();
                 localStorage.setItem('google_token', response.credential);
-                
-                console.log('✅ User logged in:', user);
             }, 800);
         }
 
         function parseJwt(token) {
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
+            return JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
         }
 
         function handleDemoLogin() {
-            // Demo/fallback login (when OAuth not configured)
             document.getElementById('loginLoader').classList.remove('hidden');
             document.getElementById('loginLoader').style.display = 'flex';
-            
             setTimeout(() => {
                 isLoggedIn = true;
-                user = { 
-                    name: "Rahul", 
-                    email: "rahul@example.com",
-                    img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" 
-                };
-                
-                updateAuthUI();
-                toggleLoginModal();
+                user = { name: "Rahul", email: "rahul@example.com", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" };
+                updateAuthUI(); toggleLoginModal();
             }, 1500);
         }
 
         function updateAuthUI() {
-            const authContainer = document.getElementById('authContainer');
-            authContainer.innerHTML = `
-            <div onclick="toggleProfileMenu()" class="relative flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-full pr-2 py-1 pl-1 border border-transparent hover:border-gray-200 transition">
-            <img src="${user.img}" class="w-8 h-8 rounded-full bg-gray-100 border border-gray-200">
-            <span class="text-xs font-bold text-gray-700 hidden md:block">Hi, ${user.name}</span>
-            <div id="profileDropdown" class="hidden absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 p-2 w-48 z-50">
-            <button onclick="handleLogout()" class="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2">
-            <i data-lucide="log-out" class="w-3 h-3"></i>
-            Logout
-            </button>
-                 </div>
-             </div>
-            `;
-
+            document.getElementById('authContainer').innerHTML = `
+            <div onclick="toggleProfileMenu()" class="relative flex items-center gap-2 cursor-pointer rounded-full pr-2 py-1 pl-1 transition" style="border:1px solid transparent;"
+                onmouseover="this.style.borderColor='var(--border)';this.style.background='var(--bg-elevated)'"
+                onmouseout="this.style.borderColor='transparent';this.style.background='transparent'">
+                <img src="${user.img}" class="w-8 h-8 rounded-full border t-border" style="background:var(--bg-elevated);">
+                <span class="text-xs font-bold hidden md:block t-text">Hi, ${user.name}</span>
+                <div id="profileDropdown" class="hidden absolute top-full right-0 mt-2 rounded-xl shadow-xl p-2 w-48 z-50 t-surface border t-border">
+                    <button onclick="handleLogout()" class="w-full text-left px-3 py-2 text-xs rounded-lg font-bold flex items-center gap-2 transition" style="color:#f87171;"
+                        onmouseover="this.style.background='var(--bg-elevated)'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="log-out" class="w-3 h-3"></i>Logout
+                    </button>
+                </div>
+            </div>`;
             lucide.createIcons();
         }
 
+        function toggleProfileMenu() { document.getElementById('profileDropdown').classList.toggle('hidden'); }
+
         function handleLogout() {
-            isLoggedIn = false;
-            user = { name: "Guest", img: "" };
+            isLoggedIn = false; user = { name: "Guest", img: "" };
             localStorage.removeItem('google_token');
-            
-            // Reset auth UI
-            const authContainer = document.getElementById('authContainer');
-            authContainer.innerHTML = `<button onclick="toggleLoginModal()" class="text-gray-600 font-bold text-xs hover:text-brand px-3 py-2">Login</button>`;
-            
-            console.log('👋 User logged out');
+            document.getElementById('authContainer').innerHTML = `<button onclick="toggleLoginModal()" class="font-bold text-xs px-3 py-2 t-muted transition">Login</button>`;
         }
 
-        // ============================================
-        // UPI QR PAYMENT SYSTEM
-        // ============================================
-
-        const upiIds = [
-            "9182210346@fam"
-        ];
+        // ===== UPI =====
+        const upiIds = ["9182210346@fam"];
 
         function showUpiQR() {
-            const total = Object.values(cart).reduce((a, b) => a + b, 0);
             const amount = Object.keys(cart).reduce((sum, id) => {
-                const product = products.find(p => p.id == id);
-                return sum + (product.price * cart[id]);
+                const p = products.find(p => p.id == id);
+                return sum + (p.price * cart[id]);
             }, 0);
-
-            const randomIndex = Math.floor(Math.random() * upiIds.length);
-            const selectedUpi = upiIds[randomIndex];
-
-            const upiLink = `upi://pay?pa=${selectedUpi}&pn=Flash&am=${amount}&cu=INR`;
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
-
+            const upi = upiIds[0];
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`upi://pay?pa=${upi}&pn=Flash&am=${amount}&cu=INR`)}`;
             document.getElementById("upiQrImage").src = qrUrl;
-            document.getElementById("upiIdText").innerText = selectedUpi;
-
+            document.getElementById("upiIdText").innerText = upi;
             document.getElementById("upiModal").classList.remove("hidden");
         }
 
@@ -423,115 +446,91 @@
             showSuccessScreen();
         }
 
-        // ============================================
-        // INIT
-        // ============================================
+        // ===== INIT =====
         function init() {
-                // ✅ Restore login after refresh
-    const savedToken = localStorage.getItem('google_token');
-    if (savedToken) {
-        const userObject = parseJwt(savedToken);
-        isLoggedIn = true;
-        user = {
-            name: userObject.given_name || userObject.name,
-            email: userObject.email,
-            img: userObject.picture
-        };
-        updateAuthUI();
-    }
-            renderSidebar();
-            renderProducts(products);
-            lucide.createIcons();
-            
-            // Initialize Google Sign-In when modal is opened
-            // This ensures the Google library is loaded
-            setTimeout(() => {
-                if (typeof google !== 'undefined') {
-                    initializeGoogleSignIn();
-                }
-            }, 1000);
-            
-            // Mobile search listener
-            document.getElementById('searchInput').addEventListener('input', (e) => {
+            applyStoredTheme();
+            const savedToken = localStorage.getItem('google_token');
+            if (savedToken) {
+                try {
+                    const u = parseJwt(savedToken);
+                    isLoggedIn = true;
+                    user = { name: u.given_name || u.name, email: u.email, img: u.picture };
+                    updateAuthUI();
+                } catch(e) { localStorage.removeItem('google_token'); }
+            }
+            renderSidebar(); renderProducts(products); lucide.createIcons();
+            setTimeout(() => { if (typeof google !== 'undefined') initializeGoogleSignIn(); }, 1000);
+            document.getElementById('searchInput').addEventListener('input', e => {
                 const term = e.target.value.toLowerCase();
                 renderProducts(products.filter(p => p.name.toLowerCase().includes(term)));
             });
         }
 
-        // ============================================
-        // RENDER FUNCTIONS
-        // ============================================
+        // ===== RENDER =====
         function renderSidebar() {
             const container = document.getElementById('categoryList');
-            container.innerHTML = `<div onclick="filterCategory('All')" class="cursor-pointer flex flex-col lg:flex-row items-center gap-2 lg:gap-3 px-2 py-3 lg:px-3 rounded-xl transition ${currentCategory === 'All' ? 'bg-indigo-50 text-brand border-l-4 border-brand' : 'text-gray-500 hover:bg-gray-50'}">
-                <div class="w-6 h-6 lg:w-8 lg:h-8 flex items-center justify-center bg-gray-200 rounded-full"><i data-lucide="layout-grid" class="w-4 h-4"></i></div>
+            const activeBase = 'background:var(--brand-soft,#e0e7ff); color:var(--brand); border-left:3px solid var(--brand);';
+            const inactiveBase = 'color:var(--text-secondary);';
+            container.innerHTML = `<div onclick="filterCategory('All')" class="cursor-pointer flex flex-col lg:flex-row items-center gap-2 lg:gap-3 px-2 py-3 lg:px-3 rounded-xl transition mb-1" style="${currentCategory === 'All' ? activeBase : inactiveBase}">
+                <div class="w-6 h-6 lg:w-8 lg:h-8 flex items-center justify-center rounded-full" style="background:var(--bg-elevated)"><i data-lucide="layout-grid" class="w-4 h-4"></i></div>
                 <span class="text-[10px] lg:text-sm font-bold">All</span>
             </div>`;
-            
             categories.forEach(cat => {
                 const isActive = currentCategory === cat.name;
-                container.innerHTML += `
-                    <div onclick="filterCategory('${cat.name}')" class="cursor-pointer flex flex-col lg:flex-row items-center gap-2 lg:gap-3 px-2 py-3 lg:px-3 rounded-xl transition ${isActive ? 'bg-indigo-50 text-brand border-l-4 border-brand' : 'text-gray-500 hover:bg-gray-50'}">
-                        <img src="${cat.icon}" class="w-8 h-8 lg:w-8 lg:h-8 object-contain ${isActive ? '' : 'grayscale opacity-70'}">
-                        <span class="text-[10px] lg:text-sm font-medium ${isActive ? 'font-bold' : ''}">${cat.name}</span>
-                    </div>`;
+                container.innerHTML += `<div onclick="filterCategory('${cat.name}')" class="cursor-pointer flex flex-col lg:flex-row items-center gap-2 lg:gap-3 px-2 py-3 lg:px-3 rounded-xl transition mb-1" style="${isActive ? activeBase : inactiveBase}">
+                    <img src="${cat.icon}" class="w-8 h-8 object-contain" style="${isActive ? '' : 'filter:grayscale(1) opacity(0.5);'}">
+                    <span class="text-[10px] lg:text-sm ${isActive ? 'font-bold' : 'font-medium'}">${cat.name}</span>
+                </div>`;
             });
             lucide.createIcons();
         }
 
         function renderProducts(productList) {
             const grid = document.getElementById('productGrid');
-            grid.innerHTML = productList.length ? '' : `<div class="col-span-full text-center py-10 text-gray-400">No products found.</div>`;
-            
+            grid.innerHTML = productList.length ? '' : `<div class="col-span-full text-center py-10 t-faint">No products found.</div>`;
             productList.forEach(p => {
                 const qty = cart[p.id] || 0;
-                const buttonHTML = qty === 0 
-                    ? `<button onclick="updateQuantity(${p.id}, 1)" class="border border-pink-200 text-accent bg-pink-50 px-4 py-1.5 rounded-lg text-xs font-bold uppercase hover:bg-accent hover:text-white transition shadow-sm w-20">ADD</button>` 
-                    : `<div class="flex items-center bg-accent rounded-lg text-white text-xs font-bold h-8 w-20 shadow-md">
-                        <button onclick="updateQuantity(${p.id}, -1)" class="w-1/3 hover:bg-pink-700 h-full rounded-l-lg flex items-center justify-center">-</button>
-                        <span class="w-1/3 text-center">${qty}</span>
-                        <button onclick="updateQuantity(${p.id}, 1)" class="w-1/3 hover:bg-pink-700 h-full rounded-r-lg flex items-center justify-center">+</button>
-                       </div>`;
-
+                const addBtn = `<button onclick="updateQuantity(${p.id}, 1)" class="px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition w-20" style="border:1px solid var(--accent)40; color:var(--accent); background:var(--accent-soft);" onmouseover="this.style.background='var(--accent)';this.style.color='white'" onmouseout="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'">ADD</button>`;
+                const qtyBtn = `<div class="flex items-center rounded-lg text-white text-xs font-bold h-8 w-20" style="background:var(--accent);">
+                    <button onclick="updateQuantity(${p.id}, -1)" class="w-1/3 h-full rounded-l-lg flex items-center justify-center hover:brightness-90">-</button>
+                    <span class="w-1/3 text-center">${qty}</span>
+                    <button onclick="updateQuantity(${p.id}, 1)" class="w-1/3 h-full rounded-r-lg flex items-center justify-center hover:brightness-90">+</button>
+                </div>`;
                 grid.innerHTML += `
-                <div class="bg-white rounded-2xl p-3 border border-gray-100 hover:shadow-xl hover:border-indigo-100 transition duration-300 flex flex-col justify-between h-full relative group">
-                    <div class="relative w-full aspect-[4/3] mb-2 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
-                        ${p.discount ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm z-10">${p.discount}</div>` : ''}
-                        <img src="${p.img}" class="h-full object-contain mix-blend-multiply transform group-hover:scale-110 transition duration-500">
+                <div class="rounded-2xl p-3 transition duration-300 flex flex-col justify-between h-full relative group card-hover cursor-pointer border" style="background:var(--bg-card); border-color:var(--border);">
+                    <div class="relative w-full aspect-[4/3] mb-2 flex items-center justify-center rounded-xl overflow-hidden" style="background:var(--bg-elevated);">
+                        <img src="${p.img}" class="product-img h-full object-contain transform group-hover:scale-110 transition duration-500">
                     </div>
                     <div>
-                        <h4 class="text-xs md:text-sm font-bold text-gray-900 leading-tight mb-1 line-clamp-2">${p.name}</h4>
-                        <p class="text-[10px] text-gray-500 mb-2">${p.weight}</p>
+                        <h4 class="text-xs md:text-sm font-bold leading-tight mb-1 line-clamp-2 t-text">${p.name}</h4>
+                        <p class="text-[10px] mb-2 t-faint">${p.weight}</p>
                     </div>
                     <div class="flex items-center justify-between mt-auto">
                         <div class="flex flex-col">
-                            <span class="text-sm font-bold text-gray-800">₹${p.price}</span>
-                            ${p.price < p.originalPrice ? `<span class="text-[10px] text-gray-400 line-through">₹${p.originalPrice}</span>` : ''}
+                            <span class="text-sm font-bold t-text">₹${p.price}</span>
+                            ${p.price < p.originalPrice ? `<span class="text-[10px] line-through t-faint">₹${p.originalPrice}</span>` : ''}
                         </div>
-                        ${buttonHTML}
+                        ${qty === 0 ? addBtn : qtyBtn}
                     </div>
                 </div>`;
             });
         }
 
-        // ============================================
-        // CART LOGIC
-        // ============================================
+        // ===== CART =====
         function updateQuantity(id, change) {
             if (!cart[id]) cart[id] = 0;
             cart[id] += change;
             if (cart[id] <= 0) delete cart[id];
-            
             filterCategory(currentCategory);
             updateCartHeader();
             renderCartDrawer();
         }
 
         function updateCartHeader() {
-            const totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
+            const total = Object.values(cart).reduce((a, b) => a + b, 0);
             const badge = document.getElementById('headerCartCount');
-            badge.innerText = totalItems;
-            totalItems > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+            badge.innerText = total;
+            total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
         }
 
         function renderCartDrawer() {
@@ -539,33 +538,36 @@
             const footer = document.getElementById('cartFooter');
             const itemIds = Object.keys(cart);
             let total = 0;
-
             if (itemIds.length === 0) {
-                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-400"><i data-lucide="shopping-bag" class="w-12 h-12 mb-2 opacity-50"></i><p class="text-sm">Your cart is empty</p><button onclick="toggleCart()" class="mt-4 text-brand font-bold text-sm">Start Shopping</button></div>`;
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full t-faint">
+                    <i data-lucide="shopping-bag" class="w-12 h-12 mb-2 opacity-50"></i>
+                    <p class="text-sm">Your cart is empty</p>
+                    <button onclick="toggleCart()" class="mt-4 font-bold text-sm t-brand">Start Shopping</button>
+                </div>`;
                 footer.classList.add('hidden');
             } else {
                 container.innerHTML = '';
                 itemIds.forEach(id => {
                     const p = products.find(prod => prod.id == id);
-                    const qty = cart[id];
-                    total += p.price * qty;
+                    const qty = cart[id]; total += p.price * qty;
                     container.innerHTML += `
-                    <div class="flex gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                        <div class="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center"><img src="${p.img}" class="h-12 w-12 object-contain mix-blend-multiply"></div>
+                    <div class="flex gap-3 p-3 rounded-xl border t-border" style="background:var(--bg-card);">
+                        <div class="w-16 h-16 rounded-lg flex items-center justify-center" style="background:var(--bg-elevated);">
+                            <img src="${p.img}" class="product-img h-12 w-12 object-contain">
+                        </div>
                         <div class="flex-1 flex flex-col justify-between">
-                            <h4 class="text-xs font-bold text-gray-800">${p.name}</h4>
+                            <h4 class="text-xs font-bold t-text">${p.name}</h4>
                             <div class="flex items-center justify-between mt-2">
-                                <span class="font-bold text-xs">₹${p.price * qty}</span>
-                                <div class="flex items-center bg-accent rounded text-white text-[10px] font-bold h-6">
-                                    <button onclick="updateQuantity(${p.id}, -1)" class="px-2 hover:bg-pink-700 h-full rounded-l">-</button>
+                                <span class="font-bold text-xs t-text">₹${p.price * qty}</span>
+                                <div class="flex items-center rounded text-white text-[10px] font-bold h-6" style="background:var(--accent);">
+                                    <button onclick="updateQuantity(${p.id}, -1)" class="px-2 h-full rounded-l hover:brightness-90">-</button>
                                     <span class="px-2">${qty}</span>
-                                    <button onclick="updateQuantity(${p.id}, 1)" class="px-2 hover:bg-pink-700 h-full rounded-r">+</button>
+                                    <button onclick="updateQuantity(${p.id}, 1)" class="px-2 h-full rounded-r hover:brightness-90">+</button>
                                 </div>
                             </div>
                         </div>
                     </div>`;
                 });
-                
                 document.getElementById('billItemTotal').innerText = '₹' + total;
                 document.getElementById('billGrandTotal').innerText = '₹' + total;
                 document.getElementById('payButtonTotal').innerText = '₹' + total;
@@ -574,92 +576,51 @@
             lucide.createIcons();
         }
 
-        // ============================================
-        // MODAL & CHECKOUT
-        // ============================================
         function toggleLoginModal() {
             const modal = document.getElementById('loginModal');
+            document.getElementById('loginLoader').classList.add('hidden');
             modal.classList.toggle('hidden');
-            
-            // Initialize Google Sign-In when modal opens
-            if (!modal.classList.contains('hidden') && typeof google !== 'undefined') {
-                initializeGoogleSignIn();
-            }
+            if (!modal.classList.contains('hidden') && typeof google !== 'undefined') initializeGoogleSignIn();
         }
 
         function initiateCheckout() {
-            if (!isLoggedIn) {
-                toggleCart();
-                setTimeout(() => toggleLoginModal(), 300);
-                return;
-            }
-
+            if (!isLoggedIn) { toggleCart(); setTimeout(() => toggleLoginModal(), 300); return; }
             const btn = document.querySelector('#cartFooter button');
-            const originalText = btn.innerHTML;
             btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>`;
             lucide.createIcons();
-
-            setTimeout(() => {
-                showUpiQR();
-            }, 1000);
+            setTimeout(() => showUpiQR(), 1000);
         }
 
         function showSuccessScreen() {
             const overlay = document.getElementById('successOverlay');
             overlay.classList.remove('hidden');
+            overlay.style.display = 'flex';
             toggleCart();
-            cart = {};
-            updateQuantity(0,0);
-
-            let minutes = 8;
-            let seconds = 0;
+            cart = {}; updateCartHeader(); renderProducts(products);
+            let minutes = 8, seconds = 0;
             const timerEl = document.getElementById('countdownTimer');
-            
             const interval = setInterval(() => {
-                if(seconds === 0) {
-                    if(minutes === 0) {
-                        clearInterval(interval);
-                        return;
-                    }
-                    minutes--;
-                    seconds = 59;
-                } else {
-                    seconds--;
-                }
-                timerEl.innerText = `0${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+                if (seconds === 0) { if (minutes === 0) { clearInterval(interval); return; } minutes--; seconds = 59; } else seconds--;
+                timerEl.innerText = `0${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
             }, 1000);
-
-            for(let i=0; i<50; i++) {
-                createConfetti();
+            for (let i = 0; i < 50; i++) {
+                const c = document.createElement('div');
+                c.classList.add('confetti');
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = ['#818cf8','#ec4899','#4ade80','#fbbf24'][Math.floor(Math.random()*4)];
+                c.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.getElementById('confettiContainer').appendChild(c);
             }
         }
 
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti');
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.backgroundColor = ['#ff0', '#f00', '#0f0', '#00f'][Math.floor(Math.random() * 4)];
-            confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
-            document.getElementById('confettiContainer').appendChild(confetti);
-        }
-
-        function resetApp() {
-            window.location.reload();
-        }
+        function resetApp() { window.location.reload(); }
 
         function toggleCart() {
             const drawer = document.getElementById('cartDrawer');
             const overlay = document.getElementById('cartOverlay');
             const isOpen = !drawer.classList.contains('translate-x-full');
-            
-            if (isOpen) {
-                drawer.classList.add('translate-x-full');
-                overlay.classList.add('hidden');
-            } else {
-                renderCartDrawer();
-                drawer.classList.remove('translate-x-full');
-                overlay.classList.remove('hidden');
-            }
+            if (isOpen) { drawer.classList.add('translate-x-full'); overlay.classList.add('hidden'); }
+            else { renderCartDrawer(); drawer.classList.remove('translate-x-full'); overlay.classList.remove('hidden'); }
         }
 
         function filterCategory(cat) {
@@ -669,26 +630,7 @@
             renderProducts(cat === 'All' ? products : products.filter(p => p.category === cat));
         }
 
-        // Start
         init();
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
