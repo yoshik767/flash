@@ -18,7 +18,7 @@
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
 
-    <header class="t-surface border-b t-border h-16 flex-none z-40 relative">
+    <header class="t-surface border-b t-border h-16 flex-none z-40 relative animate-header">
         <div class="flex items-center justify-between px-4 md:px-6 h-full max-w-7xl mx-auto w-full">
             
             <div class="flex items-center gap-4 w-1/4">
@@ -61,7 +61,7 @@
         </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
+    <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full animate-fade-blur stagger-1">
         <aside class="w-20 lg:w-64 border-r t-border t-surface overflow-y-auto no-scrollbar hidden md:block pb-20">
             <div class="p-4" id="categoryList"></div>
         </aside>
@@ -74,14 +74,14 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div class="rounded-3xl h-40 md:h-48 relative overflow-hidden p-6 text-white flex flex-col justify-center" style="background:linear-gradient(135deg, #312e81, #6366f1);">
+                <div class="rounded-3xl h-40 md:h-48 relative overflow-hidden p-6 text-white flex flex-col justify-center animate-slide-up stagger-2 hover-lift" style="background:linear-gradient(135deg, #312e81, #6366f1); cursor:pointer;">
                     <div class="absolute inset-0" style="background:radial-gradient(circle at 80% 50%, #ffffff15 0%, transparent 70%);"></div>
                     <span class="text-[10px] font-black px-2 py-1 rounded w-max mb-2 z-10" style="background:#fbbf24; color:#1e1b4b;">FREE DELIVERY</span>
                     <h2 class="text-2xl font-bold leading-tight z-10">Midnight <br>Cravings?</h2>
                     <p class="text-indigo-300 text-xs mt-1 z-10">Open till 3 AM</p>
                     <img src="https://cdn-icons-png.flaticon.com/512/3081/3081840.png" class="absolute right-0 bottom-0 w-32 h-32 opacity-10 rotate-12 translate-x-4 translate-y-4">
                 </div>
-                <div class="hidden md:flex rounded-3xl h-48 relative overflow-hidden p-6 flex-col justify-center t-card border t-border">
+                <div class="hidden md:flex rounded-3xl h-48 relative overflow-hidden p-6 flex-col justify-center t-card border t-border animate-slide-up stagger-3 hover-lift" style="cursor:pointer;">
                     <div class="absolute inset-0" style="background:radial-gradient(circle at 80% 50%, var(--accent)10 0%, transparent 70%);"></div>
                     <h2 class="text-2xl font-bold leading-tight z-10 t-text">Fresh Veggies <br><span style="color:var(--accent);">Flat 20% Off</span></h2>
                     <button class="text-white text-xs font-bold px-4 py-2 rounded-full w-max mt-3 z-10 transition" style="background:var(--accent);">Shop Now</button>
@@ -134,7 +134,7 @@
                 <div class="flex justify-between t-muted"><span>Delivery Fee</span><span class="font-bold" style="color:#22c55e;">FREE</span></div>
                 <div class="flex justify-between font-bold text-lg pt-2 border-t border-dashed t-border t-text"><span>To Pay</span><span id="billGrandTotal">₹0</span></div>
             </div>
-            <button onclick="initiateCheckout()" class="w-full text-white font-bold py-3.5 rounded-xl transition flex justify-between px-4 items-center active:scale-[0.98]" style="background:linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow:0 4px 20px #6366f130;">
+            <button onclick="initiateCheckout()" class="w-full text-white font-bold py-3.5 rounded-xl transition flex justify-between px-4 items-center apple-btn" style="background:linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow:0 4px 20px #6366f130;">
                 <span>Proceed to Pay</span>
                 <span id="payButtonTotal" class="px-2 py-1 rounded text-xs" style="background:rgba(0,0,0,0.2);">₹0</span>
             </button>
